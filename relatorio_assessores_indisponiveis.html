@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Relatório Gerencial — Assessores Indisponíveis</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#0E1620;
+    --bg-panel:#141F2B;
+    --bg-panel-2:#182534;
+    --line:#26364A;
+    --amber:#F2A93B;
+    --amber-dim:#9C6A22;
+    --amber-glow:rgba(242,169,59,0.18);
+    --danger:#E8654A;
+    --text-primary:#F3EFE6;
+    --text-muted:#8FA0B3;
+    --text-faint:#5C6E82;
+    --serif:'Fraunces', serif;
+    --sans:'IBM Plex Sans', sans-serif;
+    --mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(242,169,59,0.07), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 10%, rgba(232,101,74,0.05), transparent 55%),
+      var(--bg-deep);
+    color:var(--text-primary);
+    font-family:var(--sans);
+    line-height:1.5;
+    padding:0 0 64px 0;
+    min-height:100vh;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px;}
+
+  /* ---- Header ---- */
+  header{
+    padding:52px 0 36px 0;
+    border-bottom:1px solid var(--line);
+    margin-bottom:40px;
+    position:relative;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:11.5px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--amber);
+    display:flex;
+    align-items:center;
+    gap:9px;
+    margin-bottom:18px;
+  }
+  .blip{
+    width:7px;height:7px;border-radius:50%;
+    background:var(--amber);
+    box-shadow:0 0 0 0 rgba(242,169,59,0.6);
+    animation:pulse 1.8s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(242,169,59,0.55);}
+    70%{box-shadow:0 0 0 9px rgba(242,169,59,0);}
+    100%{box-shadow:0 0 0 0 rgba(242,169,59,0);}
+  }
+  h1{
+    font-family:var(--serif);
+    font-weight:600;
+    font-size:44px;
+    line-height:1.08;
+    margin:0 0 14px 0;
+    letter-spacing:-0.01em;
+  }
+  h1 em{
+    font-style:italic;
+    font-weight:500;
+    color:var(--amber);
+  }
+  .subtitle{
+    color:var(--text-muted);
+    font-size:15.5px;
+    max-width:640px;
+    margin:0;
+  }
+  .meta-row{
+    display:flex;
+    gap:28px;
+    margin-top:26px;
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--text-faint);
+    flex-wrap:wrap;
+  }
+  .meta-row span b{color:var(--text-muted);font-weight:500;}
+
+  /* ---- Hero stat ---- */
+  .hero{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:48px;
+    align-items:center;
+    padding:36px 0 46px 0;
+    border-bottom:1px solid var(--line);
+    margin-bottom:40px;
+  }
+  .hero-figure{
+    font-family:var(--serif);
+    font-weight:700;
+    font-size:128px;
+    line-height:0.85;
+    color:var(--amber);
+    letter-spacing:-0.03em;
+    white-space:nowrap;
+  }
+  .hero-figure sup{font-size:0.35em;top:-0.5em;color:var(--text-muted);font-family:var(--sans);font-weight:500;}
+  .hero-text{max-width:520px;}
+  .hero-text .label{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--text-faint);
+    margin-bottom:8px;
+  }
+  .hero-text p{
+    font-size:17px;
+    color:var(--text-primary);
+    margin:0;
+  }
+  .hero-text p b{color:var(--amber);font-weight:600;}
+
+  /* ---- KPI strip ---- */
+  .kpis{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+    margin-bottom:54px;
+  }
+  .kpi{
+    background:var(--bg-panel);
+    padding:22px 24px;
+  }
+  .kpi .k-label{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--text-faint);
+    margin-bottom:10px;
+  }
+  .kpi .k-value{
+    font-family:var(--serif);
+    font-size:30px;
+    font-weight:600;
+    color:var(--text-primary);
+  }
+  .kpi .k-sub{
+    font-size:12.5px;
+    color:var(--text-muted);
+    margin-top:4px;
+  }
+
+  /* ---- Section headers ---- */
+  section{margin-bottom:58px;}
+  .sec-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    margin-bottom:22px;
+    gap:20px;
+    flex-wrap:wrap;
+  }
+  .sec-head h2{
+    font-family:var(--serif);
+    font-size:24px;
+    font-weight:600;
+    margin:0;
+  }
+  .sec-head .sec-desc{
+    color:var(--text-muted);
+    font-size:13.5px;
+    margin-top:6px;
+    max-width:520px;
+  }
+  .sec-num{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--text-faint);
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+  }
+
+  /* ---- Controls ---- */
+  .controls{
+    display:flex;
+    gap:12px;
+    margin-bottom:16px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+  .search-box{
+    position:relative;
+    flex:1;
+    min-width:220px;
+  }
+  .search-box input{
+    width:100%;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px 14px 10px 34px;
+    color:var(--text-primary);
+    font-family:var(--sans);
+    font-size:13.5px;
+    outline:none;
+  }
+  .search-box input:focus{border-color:var(--amber-dim);}
+  .search-box svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--text-faint);}
+  .filter-select{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px 14px;
+    color:var(--text-primary);
+    font-family:var(--sans);
+    font-size:13.5px;
+    outline:none;
+  }
+  .count-pill{
+    font-family:var(--mono);
+    font-size:11.5px;
+    color:var(--text-faint);
+    white-space:nowrap;
+    padding:0 4px;
+  }
+
+  /* ---- Table ---- */
+  .table-panel{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:12px;
+    overflow:hidden;
+  }
+  table{width:100%;border-collapse:collapse;}
+  thead th{
+    text-align:left;
+    font-family:var(--mono);
+    font-size:10.5px;
+    letter-spacing:0.07em;
+    text-transform:uppercase;
+    color:var(--text-faint);
+    padding:14px 18px;
+    border-bottom:1px solid var(--line);
+    cursor:pointer;
+    user-select:none;
+    white-space:nowrap;
+  }
+  thead th:hover{color:var(--amber);}
+  thead th.sorted{color:var(--amber);}
+  thead th .arrow{font-size:9px;margin-left:3px;opacity:0.7;}
+  tbody tr{border-bottom:1px solid var(--line);transition:background 0.12s;}
+  tbody tr:last-child{border-bottom:none;}
+  tbody tr:hover{background:var(--bg-panel-2);}
+  tbody td{padding:13px 18px;font-size:13.5px;vertical-align:middle;}
+  td.rank{
+    font-family:var(--mono);
+    color:var(--text-faint);
+    font-size:12px;
+    width:36px;
+  }
+  td.name-cell{display:flex;align-items:center;gap:10px;}
+  .status-dot{
+    width:7px;height:7px;border-radius:50%;flex-shrink:0;
+  }
+  .status-dot.high{background:var(--danger);box-shadow:0 0 8px rgba(232,101,74,0.55);}
+  .status-dot.mid{background:var(--amber);}
+  .status-dot.low{background:var(--text-faint);}
+  .assessor-name{font-weight:500;color:var(--text-primary);}
+  td.gerente{color:var(--text-muted);}
+  td.count-val{
+    font-family:var(--mono);
+    font-weight:600;
+    color:var(--text-primary);
+  }
+  td.receita-val{
+    font-family:var(--mono);
+    color:var(--text-muted);
+    font-variant-numeric:tabular-nums;
+  }
+  td.periodo{
+    font-family:var(--mono);
+    font-size:11.5px;
+    color:var(--text-faint);
+  }
+  .bar-bg{
+    width:60px;height:5px;border-radius:3px;background:var(--line);
+    display:inline-block;margin-right:10px;overflow:hidden;vertical-align:middle;
+  }
+  .bar-fill{height:100%;background:linear-gradient(90deg,var(--amber-dim),var(--amber));border-radius:3px;}
+
+  .table-footer{
+    padding:14px 18px;
+    font-family:var(--mono);
+    font-size:11.5px;
+    color:var(--text-faint);
+    border-top:1px solid var(--line);
+    display:flex;
+    justify-content:space-between;
+  }
+  .show-more-btn{
+    background:none;border:none;color:var(--amber);font-family:var(--mono);font-size:11.5px;
+    cursor:pointer;text-decoration:underline;padding:0;
+  }
+
+  /* ---- Gerência breakdown ---- */
+  .gerente-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+  }
+  .gerente-card{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:22px 22px 20px 22px;
+  }
+  .gerente-card .g-name{
+    font-family:var(--serif);
+    font-size:18px;
+    font-weight:600;
+    margin-bottom:14px;
+  }
+  .gerente-card .g-stats{display:flex;justify-content:space-between;margin-bottom:12px;}
+  .gerente-card .g-count{font-family:var(--mono);font-size:24px;color:var(--amber);font-weight:600;}
+  .gerente-card .g-count-label{font-size:11px;color:var(--text-faint);font-family:var(--mono);text-transform:uppercase;letter-spacing:0.05em;}
+  .gerente-card .g-receita{font-family:var(--mono);font-size:13px;color:var(--text-muted);}
+  .g-bar-bg{width:100%;height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:14px;}
+  .g-bar-fill{height:100%;background:linear-gradient(90deg,var(--amber-dim),var(--amber));border-radius:3px;}
+  .g-share{font-family:var(--mono);font-size:11px;color:var(--text-faint);margin-top:8px;}
+
+  /* ---- Weekly trend ---- */
+  .trend-panel{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:28px 28px 20px 28px;
+  }
+  .trend-bars{
+    display:flex;
+    align-items:flex-end;
+    gap:18px;
+    height:150px;
+    margin-bottom:10px;
+  }
+  .trend-col{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-end;
+    height:100%;
+  }
+  .trend-bar{
+    width:100%;
+    max-width:64px;
+    background:linear-gradient(180deg,var(--amber),var(--amber-dim));
+    border-radius:6px 6px 3px 3px;
+    position:relative;
+  }
+  .trend-val{
+    font-family:var(--mono);
+    font-size:13px;
+    font-weight:600;
+    color:var(--text-primary);
+    margin-bottom:8px;
+  }
+  .trend-label{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--text-faint);
+    margin-top:10px;
+    text-align:center;
+  }
+
+  footer{
+    margin-top:50px;
+    padding-top:24px;
+    border-top:1px solid var(--line);
+    font-family:var(--mono);
+    font-size:11.5px;
+    color:var(--text-faint);
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+
+  @media (max-width:760px){
+    .wrap{padding:0 18px;}
+    h1{font-size:32px;}
+    .hero{grid-template-columns:1fr;gap:20px;}
+    .hero-figure{font-size:88px;}
+    .kpis{grid-template-columns:repeat(2,1fr);}
+    .gerente-grid{grid-template-columns:1fr;}
+    thead th:nth-child(5),td.periodo{display:none;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow"><span class="blip"></span> RELATÓRIO GERENCIAL — ALOCAÇÃO · INVESTSMART</div>
+    <h1>Assessores <em>Indisponíveis</em></h1>
+    <p class="subtitle">Ranking de assessores com maior incidência de demandas perdidas por indisponibilidade — extração Bitrix24, ciclo de Junho/2026.</p>
+    <div class="meta-row">
+      <span><b>Fonte</b> · extracao_completa_bitrix.csv</span>
+      <span><b>Período</b> · 08/06/2026 – 30/06/2026</span>
+      <span><b>Base</b> · 823 demandas analisadas</span>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="hero-figure">49<sup>%</sup></div>
+    <div class="hero-text">
+      <div class="label">Motivo de perda dominante</div>
+      <p>Quase <b>metade de todas as demandas perdidas</b> em Junho (226 de 458) tiveram como causa registrada a <b>indisponibilidade do assessor</b> — à frente de qualquer outro motivo de perda no funil.</p>
+    </div>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi">
+      <div class="k-label">Ocorrências</div>
+      <div class="k-value">226</div>
+      <div class="k-sub">demandas perdidas por indisponibilidade</div>
+    </div>
+    <div class="kpi">
+      <div class="k-label">Receita estimada em risco</div>
+      <div class="k-value">R$ 20,8M</div>
+      <div class="k-sub">soma das oportunidades não concluídas</div>
+    </div>
+    <div class="kpi">
+      <div class="k-label">Assessores envolvidos</div>
+      <div class="k-value">199</div>
+      <div class="k-sub">de um total de assessores ativos na base</div>
+    </div>
+    <div class="kpi">
+      <div class="k-label">Gerência mais impactada</div>
+      <div class="k-value" style="font-size:22px;">Daniel Nogueira</div>
+      <div class="k-sub">152 ocorrências · R$ 17,7M</div>
+    </div>
+  </div>
+
+  <section id="ranking-section">
+    <div class="sec-head">
+      <div>
+        <h2>Ranking por assessor</h2>
+        <div class="sec-desc">Ordenado por número de ocorrências. Empates são desempatados pela receita estimada em risco.</div>
+      </div>
+      <div class="sec-num">01 — RANKING</div>
+    </div>
+
+    <div class="controls">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" placeholder="Buscar assessor ou gerente...">
+      </div>
+      <select class="filter-select" id="gerenteFilter">
+        <option value="">Todas as gerências</option>
+        <option value="Daniel Nogueira">Daniel Nogueira</option>
+        <option value="Gustavo Badia">Gustavo Badia</option>
+        <option value="Andre Meirelles">Andre Meirelles</option>
+      </select>
+      <span class="count-pill" id="resultCount"></span>
+    </div>
+
+    <div class="table-panel">
+      <table>
+        <thead>
+          <tr>
+            <th data-key="rank">#</th>
+            <th data-key="assessor">Assessor</th>
+            <th data-key="gerente">Gerência</th>
+            <th data-key="count" class="sorted">Ocorrências <span class="arrow">▼</span></th>
+            <th data-key="receita">Receita em risco</th>
+            <th data-key="periodo">Período</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      <div class="table-footer">
+        <span id="footerInfo">Exibindo 20 de 199</span>
+        <button class="show-more-btn" id="showMoreBtn">mostrar todos ↓</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="gerente-section">
+    <div class="sec-head">
+      <div>
+        <h2>Concentração por gerência</h2>
+        <div class="sec-desc">Distribuição das ocorrências de indisponibilidade entre as três gerências da diretoria.</div>
+      </div>
+      <div class="sec-num">02 — GERÊNCIAS</div>
+    </div>
+    <div class="gerente-grid" id="gerenteGrid"></div>
+  </section>
+
+  <section id="trend-section">
+    <div class="sec-head">
+      <div>
+        <h2>Evolução semanal</h2>
+        <div class="sec-desc">Número de ocorrências de "Assessor Indisponível" por semana do ciclo de Junho.</div>
+      </div>
+      <div class="sec-num">03 — TENDÊNCIA</div>
+    </div>
+    <div class="trend-panel">
+      <div class="trend-bars" id="trendBars"></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Relatório gerado automaticamente a partir da extração Bitrix24 · InvestSmart — Alocação</span>
+    <span>Subcategoria de perda: "Assessor Indisponível"</span>
+  </footer>
+
+</div>
+
+<script>
+const RANKING = [{"assessor": "Leonardo Azulay", "gerente": "Daniel Nogueira", "count": 3, "receita": 381565.83, "temas": [["Junho - Semana 2", 2], ["Junho - Semana 3", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Marina Rocha", "gerente": "Daniel Nogueira", "count": 3, "receita": 16492.71, "temas": [["Junho - Semana 3", 3]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "VICTOR HUGO LUQUE", "gerente": "Daniel Nogueira", "count": 2, "receita": 757638.85, "temas": [["Junho - Semana 2", 1], ["Junho - Semana 3", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Bruno Ponciano", "gerente": "Daniel Nogueira", "count": 2, "receita": 404694.42, "temas": [["Junho - Semana 2", 2]], "periodo_ini": "08/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Fabiana Cirilo", "gerente": "Daniel Nogueira", "count": 2, "receita": 8767.31, "temas": [["Junho - Semana 2", 1], ["Junho - Semana 3", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Renato Paixão de Mendonça", "gerente": "Daniel Nogueira", "count": 2, "receita": 293275.72, "temas": [["Junho - Semana 2", 1], ["Junho - Semana 3", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Luiz Priante", "gerente": "Daniel Nogueira", "count": 2, "receita": 8549.63, "temas": [["Junho - Semana 2", 1], ["Junho - Semana 3", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Daniel Braga", "gerente": "Daniel Nogueira", "count": 2, "receita": 416331.26, "temas": [["Junho - Semana 2", 2]], "periodo_ini": "08/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Guilherme Granato", "gerente": "Daniel Nogueira", "count": 2, "receita": 283627.56, "temas": [["Junho - Semana 2", 2]], "periodo_ini": "08/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Lucas Cerroni", "gerente": "Daniel Nogueira", "count": 2, "receita": 270589.16, "temas": [["Junho - Semana 2", 1], ["Junho - Semana 3", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Rafael Ribeiro", "gerente": "Gustavo Badia", "count": 2, "receita": 237559.39, "temas": [["Junho - Semana 2", 1], ["Junho - Semana 3", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Josie Cruz", "gerente": "Daniel Nogueira", "count": 2, "receita": 6011.96, "temas": [["Junho - Semana 2", 1], ["Junho - Semana 3", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Eduardo Manzano", "gerente": "Daniel Nogueira", "count": 2, "receita": 153893.13, "temas": [["Junho - Semana 2", 1], ["Junho - Semana 3", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Lucas Batista", "gerente": "Daniel Nogueira", "count": 2, "receita": 174793.67, "temas": [["Junho - Semana 2", 2]], "periodo_ini": "08/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Claudio Figueiredo", "gerente": "Daniel Nogueira", "count": 2, "receita": 976.91, "temas": [["Junho - Semana 2", 1], ["Junho - Semana 3", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Leandro Doretto", "gerente": "Daniel Nogueira", "count": 2, "receita": 93980.93, "temas": [["Junho - Semana 2", 1], ["Junho - Semana 3", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Gustavo Granato", "gerente": "Daniel Nogueira", "count": 2, "receita": 5240.66, "temas": [["Junho - Semana 2", 1], ["Junho - Semana 3", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Vitor Conor", "gerente": "Daniel Nogueira", "count": 2, "receita": 1545.23, "temas": [["Junho - Semana 2", 1], ["Junho - Semana 3", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Wesley Silva", "gerente": "Daniel Nogueira", "count": 2, "receita": 3542.45, "temas": [["Junho - Semana 3", 2]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Pedro Siqueira", "gerente": "Gustavo Badia", "count": 2, "receita": 3217.8, "temas": [["Junho - Semana 3", 2]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Fabiana Carvalho", "gerente": "Gustavo Badia", "count": 2, "receita": 2570.96, "temas": [["Junho - Semana 3", 2]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Diego Bezerra", "gerente": "Daniel Nogueira", "count": 2, "receita": 1446.8, "temas": [["Junho - Semana 3", 2]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Ricardo Venerando", "gerente": "Daniel Nogueira", "count": 2, "receita": 1413.54, "temas": [["Junho - Semana 3", 2]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Fernando Watacabe", "gerente": "Daniel Nogueira", "count": 2, "receita": 2189.52, "temas": [["Junho - Semana 3", 2]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Luis Prestes", "gerente": "Daniel Nogueira", "count": 2, "receita": 1625.3, "temas": [["Junho - Semana 3", 2]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Renzo Agresta", "gerente": "Daniel Nogueira", "count": 1, "receita": 8801066.24, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Fernanda Zucatelli", "gerente": "Daniel Nogueira", "count": 1, "receita": 1832528.43, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Rodrigo Guimaraes", "gerente": "Daniel Nogueira", "count": 1, "receita": 14792.58, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Felipe Santana", "gerente": "Gustavo Badia", "count": 1, "receita": 832934.08, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "FLAVIA DE LIMA BITTAR MANENTE", "gerente": "Daniel Nogueira", "count": 1, "receita": 7291.41, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Walter Silva", "gerente": "Daniel Nogueira", "count": 1, "receita": 15678.37, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Luan Ferrer", "gerente": "Daniel Nogueira", "count": 1, "receita": 5376.78, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Giuliano Agostinho de Castro", "gerente": "Gustavo Badia", "count": 1, "receita": 364863.82, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Kyllian Santos", "gerente": "Daniel Nogueira", "count": 1, "receita": 5048.79, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Fabio Pereira", "gerente": "Daniel Nogueira", "count": 1, "receita": 574015.09, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Juliana Lima", "gerente": "Daniel Nogueira", "count": 1, "receita": 6754.93, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Lucas Tateno", "gerente": "Daniel Nogueira", "count": 1, "receita": 427232.25, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Maxwell Rinaldi", "gerente": "Daniel Nogueira", "count": 1, "receita": 499888.06, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Danilo Morelli", "gerente": "Daniel Nogueira", "count": 1, "receita": 384025.02, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Matheus Curcio", "gerente": "Andre Meirelles", "count": 1, "receita": 488878.81, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Bruno Abreu", "gerente": "Gustavo Badia", "count": 1, "receita": 227662.77, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Abrahao Godoy", "gerente": "Daniel Nogueira", "count": 1, "receita": 202014.99, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Vitor Hugo Carvalho", "gerente": "Gustavo Badia", "count": 1, "receita": 345916.89, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Emerson Heringer", "gerente": "Daniel Nogueira", "count": 1, "receita": 268775.57, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Gustavo Cursino", "gerente": "Daniel Nogueira", "count": 1, "receita": 207302.08, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Pedro Santana", "gerente": "Andre Meirelles", "count": 1, "receita": 243760.78, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Gabriel Santana", "gerente": "Daniel Nogueira", "count": 1, "receita": 2467.61, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Anderson Amorim", "gerente": "Daniel Nogueira", "count": 1, "receita": 227754.27, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Vinicius Guerra", "gerente": "Gustavo Badia", "count": 1, "receita": 172752.22, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Gustavo Soares", "gerente": "Daniel Nogueira", "count": 1, "receita": 214584.62, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Glaucia Coutinho", "gerente": "Daniel Nogueira", "count": 1, "receita": 179811.01, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Thiago Melo Araújo", "gerente": "Daniel Nogueira", "count": 1, "receita": 814.04, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Marcelo Faingezicht", "gerente": "Daniel Nogueira", "count": 1, "receita": 106701.36, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "08/06/2026", "periodo_fim": "08/06/2026"}, {"assessor": "Emerson Piantkoski", "gerente": "Daniel Nogueira", "count": 1, "receita": 6041.38, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Mauricio Miele", "gerente": "Daniel Nogueira", "count": 1, "receita": 2073.05, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Gustavo Limaverde Figueiredo", "gerente": "Daniel Nogueira", "count": 1, "receita": 1793.99, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Daiana Franco", "gerente": "Daniel Nogueira", "count": 1, "receita": 2321.11, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Rai Medeiros", "gerente": "Gustavo Badia", "count": 1, "receita": 1328.88, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Diego Costa", "gerente": "Daniel Nogueira", "count": 1, "receita": 1240.29, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Bruno Miceli", "gerente": "Gustavo Badia", "count": 1, "receita": 3059.47, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Eduardo Mascarenhas", "gerente": "Andre Meirelles", "count": 1, "receita": 841.62, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Walter Minutti Santalucia Junior", "gerente": "Daniel Nogueira", "count": 1, "receita": 708.74, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Bruno Nelo", "gerente": "Daniel Nogueira", "count": 1, "receita": 1420.08, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Raphael Miranda", "gerente": "Daniel Nogueira", "count": 1, "receita": 664.44, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Marli Garcia", "gerente": "Daniel Nogueira", "count": 1, "receita": 442.96, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Cleber Bomfim", "gerente": "Andre Meirelles", "count": 1, "receita": 756.56, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Gabriel Machado", "gerente": "Andre Meirelles", "count": 1, "receita": 1753.02, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Paulo Henrique Salles", "gerente": "Daniel Nogueira", "count": 1, "receita": 5447.27, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Natalia Barbosa", "gerente": "Daniel Nogueira", "count": 1, "receita": 202.87, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Alexandre Tumbert", "gerente": "Daniel Nogueira", "count": 1, "receita": 13644.11, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Fellipe Hadadd", "gerente": "Andre Meirelles", "count": 1, "receita": 5735.74, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Marcela Saboya", "gerente": "Andre Meirelles", "count": 1, "receita": 4390.4, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Darlei Saraiva", "gerente": "Gustavo Badia", "count": 1, "receita": 4252.42, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Fagner Fonseca", "gerente": "Andre Meirelles", "count": 1, "receita": 1881.6, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "DIOGO DA TRINDADE SILVA", "gerente": "Daniel Nogueira", "count": 1, "receita": 1317.12, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Vinicius Cavalcanti", "gerente": "Gustavo Badia", "count": 1, "receita": 1254.4, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Issam Hammoud", "gerente": "Daniel Nogueira", "count": 1, "receita": 2074.15, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Otávio de Paula Xisto Nunes", "gerente": "Gustavo Badia", "count": 1, "receita": 1128.96, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Thiago Kabbach Koukdjian", "gerente": "Daniel Nogueira", "count": 1, "receita": 1095.72, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Filipe Marques", "gerente": "Gustavo Badia", "count": 1, "receita": 1066.24, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Carla Cristiane Ranchil", "gerente": "Andre Meirelles", "count": 1, "receita": 982.82, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Bruno Padovan", "gerente": "Daniel Nogueira", "count": 1, "receita": 940.8, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Ronaldo Almeida", "gerente": "Daniel Nogueira", "count": 1, "receita": 878.08, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Rafael Morada", "gerente": "Gustavo Badia", "count": 1, "receita": 1104.5, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Patricia Pessoa", "gerente": "Gustavo Badia", "count": 1, "receita": 752.64, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Israel Teixeira", "gerente": "Gustavo Badia", "count": 1, "receita": 689.92, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Wesley Ferreira", "gerente": "Andre Meirelles", "count": 1, "receita": 689.92, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Tiago Vanildo", "gerente": "Gustavo Badia", "count": 1, "receita": 627.2, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Edson Cardoso", "gerente": "Andre Meirelles", "count": 1, "receita": 627.2, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Jorge Madureira", "gerente": "Andre Meirelles", "count": 1, "receita": 627.2, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Alexandre Polatti", "gerente": "Daniel Nogueira", "count": 1, "receita": 627.2, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Mario Machado", "gerente": "Andre Meirelles", "count": 1, "receita": 464.76, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "GLAUBER OLIVEIRA DE ALCANTARA SILVA", "gerente": "Andre Meirelles", "count": 1, "receita": 752.64, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Camilla Xavier", "gerente": "Andre Meirelles", "count": 1, "receita": 376.32, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "DANIEL UCHOA SOUBHIA", "gerente": "Daniel Nogueira", "count": 1, "receita": 352.49, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Thiago Picanco", "gerente": "Gustavo Badia", "count": 1, "receita": 564.48, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Fernanda Ambrosio", "gerente": "Daniel Nogueira", "count": 1, "receita": 313.6, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Lucas Carvalho", "gerente": "Gustavo Badia", "count": 1, "receita": 250.88, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Rafael Trento", "gerente": "Daniel Nogueira", "count": 1, "receita": 250.88, "temas": [["Junho - Semana 2", 1]], "periodo_ini": "09/06/2026", "periodo_fim": "09/06/2026"}, {"assessor": "Samantha Vianna", "gerente": "Daniel Nogueira", "count": 1, "receita": 8581.31, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Fabio Mangabeira", "gerente": "Daniel Nogueira", "count": 1, "receita": 5465.28, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Fabio Adauto", "gerente": "Daniel Nogueira", "count": 1, "receita": 7144.69, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Edilson Gomes de Souza", "gerente": "Daniel Nogueira", "count": 1, "receita": 3041.4, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Antonio Nogarotto", "gerente": "Daniel Nogueira", "count": 1, "receita": 2590.6, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Vitor Gomes", "gerente": "Gustavo Badia", "count": 1, "receita": 3555.13, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Gabriel Venezian Barbosa", "gerente": "Daniel Nogueira", "count": 1, "receita": 4537.3, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Daniel Calvente Bayan", "gerente": "Andre Meirelles", "count": 1, "receita": 4509.1, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Samuel Ribeiro", "gerente": "Gustavo Badia", "count": 1, "receita": 2262.19, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Bruno Matos", "gerente": "Gustavo Badia", "count": 1, "receita": 3636.54, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Thiago Uto", "gerente": "Gustavo Badia", "count": 1, "receita": 2691.47, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Matheus Fontenele", "gerente": "Andre Meirelles", "count": 1, "receita": 4948.98, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Wagner Tadeu", "gerente": "Daniel Nogueira", "count": 1, "receita": 3043.21, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Daniel Saramago", "gerente": "Gustavo Badia", "count": 1, "receita": 3069.11, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Erasmo Fontenele", "gerente": "Daniel Nogueira", "count": 1, "receita": 3593.61, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Matheus Araujo Gigli", "gerente": "Andre Meirelles", "count": 1, "receita": 2961.87, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Gabriel Panice", "gerente": "Gustavo Badia", "count": 1, "receita": 6222.21, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Vinicius Pinheiro", "gerente": "Andre Meirelles", "count": 1, "receita": 3100.83, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Celio de Figueiredo Barbosa", "gerente": "Daniel Nogueira", "count": 1, "receita": 4214.8, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Vinícius Masiero", "gerente": "Daniel Nogueira", "count": 1, "receita": 1180.13, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Leandro Curcio", "gerente": "Andre Meirelles", "count": 1, "receita": 1852.37, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Daniel Abreu", "gerente": "Daniel Nogueira", "count": 1, "receita": 1532.65, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Marcia Lira", "gerente": "Daniel Nogueira", "count": 1, "receita": 4527.03, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Everton Medeiros", "gerente": "Daniel Nogueira", "count": 1, "receita": 2598.22, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Antonio Romeiro", "gerente": "Daniel Nogueira", "count": 1, "receita": 1067.03, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "LUCIANO MEDINA MARTINEZ", "gerente": "Daniel Nogueira", "count": 1, "receita": 5192.05, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Tadeu Ribas", "gerente": "Daniel Nogueira", "count": 1, "receita": 2440.67, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Thompson Leite", "gerente": "Andre Meirelles", "count": 1, "receita": 1794.33, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Leonardo Martins", "gerente": "Daniel Nogueira", "count": 1, "receita": 2928.76, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Nicholas Devezas", "gerente": "Daniel Nogueira", "count": 1, "receita": 5705.25, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Silneia Weschenfelder", "gerente": "Daniel Nogueira", "count": 1, "receita": 916.55, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Isaias Vieira", "gerente": "Daniel Nogueira", "count": 1, "receita": 1711.36, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Felipe Nascimento", "gerente": "Gustavo Badia", "count": 1, "receita": 1691.29, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Vinicius Araújo", "gerente": "Daniel Nogueira", "count": 1, "receita": 2172.84, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Priscilla Marques Leite", "gerente": "Daniel Nogueira", "count": 1, "receita": 2000.6, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Raphael Mendes", "gerente": "Daniel Nogueira", "count": 1, "receita": 762.65, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Ketly Ceglys", "gerente": "Daniel Nogueira", "count": 1, "receita": 1038.11, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Matheus Rodrigues dos Santos Leitão", "gerente": "Daniel Nogueira", "count": 1, "receita": 787.48, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Amanda Mendes", "gerente": "Daniel Nogueira", "count": 1, "receita": 4614.51, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Mauro Arede", "gerente": "Daniel Nogueira", "count": 1, "receita": 1616.76, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "VIVIAN GRAZIELA DA SILVA DE OLIVEIRA", "gerente": "Daniel Nogueira", "count": 1, "receita": 3525.58, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Luis Mantovani", "gerente": "Daniel Nogueira", "count": 1, "receita": 248.46, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Fábio Luis França de Faria", "gerente": "Gustavo Badia", "count": 1, "receita": 248.46, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Bleine Conceição Bach", "gerente": "Gustavo Badia", "count": 1, "receita": 248.46, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Sandra Serra", "gerente": "Gustavo Badia", "count": 1, "receita": 452.38, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Franco Edagi", "gerente": "Daniel Nogueira", "count": 1, "receita": 717.36, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Bruno Lage", "gerente": "Gustavo Badia", "count": 1, "receita": 4720.74, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Marcel Mariano", "gerente": "Daniel Nogueira", "count": 1, "receita": 248.46, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Elton Costa", "gerente": "Daniel Nogueira", "count": 1, "receita": 360.27, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Rafael Paes", "gerente": "Daniel Nogueira", "count": 1, "receita": 372.69, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Lucas Martins", "gerente": "Daniel Nogueira", "count": 1, "receita": 745.38, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Inacio Farias", "gerente": "Daniel Nogueira", "count": 1, "receita": 567.07, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Bruno Guimaraes", "gerente": "Andre Meirelles", "count": 1, "receita": 3300.11, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Nathan Soares", "gerente": "Daniel Nogueira", "count": 1, "receita": 1062.69, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Victor Soares", "gerente": "Daniel Nogueira", "count": 1, "receita": 428.59, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Claudio Barra", "gerente": "Daniel Nogueira", "count": 1, "receita": 460.89, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Cesar Barretta Dall'Antonia", "gerente": "Daniel Nogueira", "count": 1, "receita": 863.68, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Jonathan Resende", "gerente": "Andre Meirelles", "count": 1, "receita": 496.92, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "José de Almeida Menezes Junior", "gerente": "Andre Meirelles", "count": 1, "receita": 551.58, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Themis Briand", "gerente": "Andre Meirelles", "count": 1, "receita": 621.15, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "LORRAN LOBO ARAUJO", "gerente": "Andre Meirelles", "count": 1, "receita": 660.9, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "RENAN SCAGLIANTI FAZOLINO", "gerente": "Daniel Nogueira", "count": 1, "receita": 440.12, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Gabriel Baeta", "gerente": "Gustavo Badia", "count": 1, "receita": 146.71, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Silvana Lischewski", "gerente": "Gustavo Badia", "count": 1, "receita": 733.53, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Jefferson Fedato", "gerente": "Daniel Nogueira", "count": 1, "receita": 293.41, "temas": [["Junho - Semana 3", 1]], "periodo_ini": "15/06/2026", "periodo_fim": "15/06/2026"}, {"assessor": "Thiago Verdade", "gerente": "Andre Meirelles", "count": 1, "receita": 10633.48, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Karina Fonseca", "gerente": "Daniel Nogueira", "count": 1, "receita": 9603.16, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Lucas Pigatto", "gerente": "Daniel Nogueira", "count": 1, "receita": 15400.25, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Sérgio Ruffo", "gerente": "Daniel Nogueira", "count": 1, "receita": 5201.95, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Marcos Vieira Santana", "gerente": "Daniel Nogueira", "count": 1, "receita": 3032.51, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Enzo Mendes", "gerente": "Daniel Nogueira", "count": 1, "receita": 10805.43, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Fabio Manzano Calvente", "gerente": "Daniel Nogueira", "count": 1, "receita": 11912.52, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Lucca Yamaguchi", "gerente": "Andre Meirelles", "count": 1, "receita": 8082.15, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Pedro Uemura", "gerente": "Daniel Nogueira", "count": 1, "receita": 32974.56, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Eduardo Decrescenzo Santos", "gerente": "Daniel Nogueira", "count": 1, "receita": 3732.0, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Ighor Domingues", "gerente": "Daniel Nogueira", "count": 1, "receita": 22045.09, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Paulo Benedetti", "gerente": "Gustavo Badia", "count": 1, "receita": 15092.91, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "MARCELO MARTINS GOMES", "gerente": "Daniel Nogueira", "count": 1, "receita": 3914.62, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Carolina Azevedo", "gerente": "Daniel Nogueira", "count": 1, "receita": 16867.81, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Raphael Costa", "gerente": "Daniel Nogueira", "count": 1, "receita": 4912.8, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Pedro Cunha", "gerente": "Gustavo Badia", "count": 1, "receita": 14596.28, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Leticia Cristina", "gerente": "Gustavo Badia", "count": 1, "receita": 6706.31, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Carlos Bellizzi", "gerente": "Gustavo Badia", "count": 1, "receita": 12490.25, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Julio Cabral Del Bigio", "gerente": "Daniel Nogueira", "count": 1, "receita": 2967.08, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Adriano Steinmetz", "gerente": "Daniel Nogueira", "count": 1, "receita": 28946.74, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Lucas Pasquarelli", "gerente": "Daniel Nogueira", "count": 1, "receita": 14125.16, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Diego Silva Belleck", "gerente": "Daniel Nogueira", "count": 1, "receita": 13433.26, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Flavia Leao", "gerente": "Gustavo Badia", "count": 1, "receita": 15461.05, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Tiago Costa", "gerente": "Gustavo Badia", "count": 1, "receita": 21025.27, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Cibele Malta", "gerente": "Daniel Nogueira", "count": 1, "receita": 22114.45, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Creusa Moura", "gerente": "Andre Meirelles", "count": 1, "receita": 14558.58, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "ADRIANA ETSUCO KANAMURU", "gerente": "Daniel Nogueira", "count": 1, "receita": 12273.89, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Diogo Santos", "gerente": "Gustavo Badia", "count": 1, "receita": 10372.17, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Nedison Simoes", "gerente": "Gustavo Badia", "count": 1, "receita": 12863.53, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Joao Pedro De Moraes", "gerente": "Daniel Nogueira", "count": 1, "receita": 2795.71, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Lauro Nagamine", "gerente": "Daniel Nogueira", "count": 1, "receita": 7091.84, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Marcelo Fregoneze", "gerente": "Daniel Nogueira", "count": 1, "receita": 3041.45, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Victor Barreto", "gerente": "Daniel Nogueira", "count": 1, "receita": 4579.23, "temas": [["Junho - Semana 4", 1]], "periodo_ini": "22/06/2026", "periodo_fim": "22/06/2026"}, {"assessor": "Alexandre Buzogany", "gerente": "Andre Meirelles", "count": 1, "receita": 1669.2, "temas": [["Junho - Semana 5", 1]], "periodo_ini": "30/06/2026", "periodo_fim": "30/06/2026"}, {"assessor": "Alessandro Zacarias", "gerente": "Daniel Nogueira", "count": 1, "receita": 2954.61, "temas": [["Junho - Semana 5", 1]], "periodo_ini": "30/06/2026", "periodo_fim": "30/06/2026"}];
+
+const GERENTES = [
+  {nome:"Daniel Nogueira", count:152, receita:17666032.00},
+  {nome:"Gustavo Badia", count:44, receita:2341843.91},
+  {nome:"Andre Meirelles", count:30, receita:812260.94}
+];
+
+const WEEKS = [
+  {label:"Semana 2", count:96},
+  {label:"Semana 3", count:95},
+  {label:"Semana 4", count:33},
+  {label:"Semana 5", count:2}
+];
+
+function fmtBRL(v){
+  return 'R$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits:0, maximumFractionDigits:0});
+}
+
+function statusClass(count){
+  if(count >= 3) return 'high';
+  if(count === 2) return 'mid';
+  return 'low';
+}
+
+let sortKey = 'count';
+let sortDir = -1;
+let showAll = false;
+let searchTerm = '';
+let gerenteFilterVal = '';
+
+function getFiltered(){
+  let rows = RANKING.filter(r=>{
+    const matchSearch = !searchTerm || r.assessor.toLowerCase().includes(searchTerm) || r.gerente.toLowerCase().includes(searchTerm);
+    const matchGerente = !gerenteFilterVal || r.gerente === gerenteFilterVal;
+    return matchSearch && matchGerente;
+  });
+  rows.sort((a,b)=>{
+    let av, bv;
+    if(sortKey==='assessor'||sortKey==='gerente'){ av=a[sortKey].toLowerCase(); bv=b[sortKey].toLowerCase(); return sortDir*(av<bv?-1:av>bv?1:0); }
+    if(sortKey==='count'){ av=a.count; bv=b.count; if(av===bv) return b.receita-a.receita; return sortDir*(av-bv); }
+    if(sortKey==='receita'){ av=a.receita; bv=b.receita; return sortDir*(av-bv); }
+    return 0;
+  });
+  return rows;
+}
+
+function render(){
+  const filtered = getFiltered();
+  const body = document.getElementById('tableBody');
+  const limit = showAll ? filtered.length : Math.min(20, filtered.length);
+  const rowsToShow = filtered.slice(0, limit);
+  const maxCount = RANKING[0].count;
+
+  body.innerHTML = rowsToShow.map((r, i)=>{
+    const pct = Math.max(6, Math.round((r.count/maxCount)*100));
+    const periodo = r.periodo_ini === r.periodo_fim ? r.periodo_ini : (r.periodo_ini + ' – ' + r.periodo_fim);
+    return `<tr>
+      <td class="rank">${i+1}</td>
+      <td class="name-cell"><span class="status-dot ${statusClass(r.count)}"></span><span class="assessor-name">${r.assessor}</span></td>
+      <td class="gerente">${r.gerente}</td>
+      <td class="count-val"><span class="bar-bg"><span class="bar-fill" style="width:${pct}%"></span></span>${r.count}</td>
+      <td class="receita-val">${fmtBRL(r.receita)}</td>
+      <td class="periodo">${periodo}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('resultCount').textContent = filtered.length + ' assessor(es)';
+  document.getElementById('footerInfo').textContent = `Exibindo ${rowsToShow.length} de ${filtered.length}`;
+  document.getElementById('showMoreBtn').style.display = filtered.length > 20 ? 'inline' : 'none';
+  document.getElementById('showMoreBtn').textContent = showAll ? 'mostrar menos ↑' : 'mostrar todos ↓';
+
+  document.querySelectorAll('thead th[data-key]').forEach(th=>{
+    th.classList.remove('sorted');
+    const arrow = th.querySelector('.arrow');
+    if(arrow) arrow.remove();
+  });
+  const activeTh = document.querySelector(`thead th[data-key="${sortKey}"]`);
+  if(activeTh){
+    activeTh.classList.add('sorted');
+    const arrowSpan = document.createElement('span');
+    arrowSpan.className='arrow';
+    arrowSpan.textContent = sortDir===1 ? '▲' : '▼';
+    activeTh.appendChild(arrowSpan);
+  }
+}
+
+document.querySelectorAll('thead th[data-key]').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const key = th.getAttribute('data-key');
+    if(key==='rank') return;
+    if(sortKey===key){ sortDir = -sortDir; } else { sortKey = key; sortDir = -1; }
+    showAll = false;
+    render();
+  });
+});
+
+document.getElementById('searchInput').addEventListener('input', (e)=>{
+  searchTerm = e.target.value.toLowerCase();
+  showAll = false;
+  render();
+});
+document.getElementById('gerenteFilter').addEventListener('change', (e)=>{
+  gerenteFilterVal = e.target.value;
+  showAll = false;
+  render();
+});
+document.getElementById('showMoreBtn').addEventListener('click', ()=>{
+  showAll = !showAll;
+  render();
+});
+
+// Gerência cards
+const totalOcorrencias = GERENTES.reduce((s,g)=>s+g.count,0);
+document.getElementById('gerenteGrid').innerHTML = GERENTES.map(g=>{
+  const pct = Math.round((g.count/totalOcorrencias)*100);
+  return `<div class="gerente-card">
+    <div class="g-name">${g.nome}</div>
+    <div class="g-stats">
+      <div>
+        <div class="g-count">${g.count}</div>
+        <div class="g-count-label">ocorrências</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="g-receita">${fmtBRL(g.receita)}</div>
+        <div class="g-count-label">em risco</div>
+      </div>
+    </div>
+    <div class="g-bar-bg"><div class="g-bar-fill" style="width:${pct}%"></div></div>
+    <div class="g-share">${pct}% do total de ocorrências</div>
+  </div>`;
+}).join('');
+
+// Trend bars
+const maxWeek = Math.max(...WEEKS.map(w=>w.count));
+document.getElementById('trendBars').innerHTML = WEEKS.map(w=>{
+  const h = Math.max(8, Math.round((w.count/maxWeek)*100));
+  return `<div class="trend-col">
+    <div class="trend-val">${w.count}</div>
+    <div class="trend-bar" style="height:${h}%"></div>
+    <div class="trend-label">${w.label}</div>
+  </div>`;
+}).join('');
+
+render();
+</script>
+</body>
+</html>
